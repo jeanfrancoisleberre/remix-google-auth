@@ -1,41 +1,21 @@
-import type { MetaFunction } from "@remix-run/node";
+// app/routes/register.tsx
+import { type LoaderFunctionArgs, json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
-  ];
-};
+import { generateAuthUrl } from "../lib/oauth-providers/google";
 
-export default function Index() {
+export async function loader({ request }: LoaderFunctionArgs) {
+  // Put "register" in the state so we know where the user is 
+  // coming from when they are sent back to us from Google.
+  return json({ googleAuthUrl: generateAuthUrl("remix-google-auth") });
+}
+
+export default function Register() {
+  const { googleAuthUrl } = useLoaderData<typeof loader>();
+
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
+    <div>
+      <a href={googleAuthUrl}>Continue with Google</a>
     </div>
   );
 }
